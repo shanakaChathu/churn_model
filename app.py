@@ -12,6 +12,11 @@ template_dir = os.path.join(webapp_root, "templates")
 
 app = Flask(__name__, static_folder=static_dir,template_folder=template_dir)
 
+class  NotFloat(Exception):
+    def __init__(self, message="Values entered are not float"):
+        self.message = message
+        super().__init__(self.message)
+
 def read_params(config_path):
     with open(config_path) as yaml_file:
         config = yaml.safe_load(yaml_file)
@@ -24,11 +29,24 @@ def predict(data):
     prediction = model.predict(data).tolist()[0]
     return prediction 
 
+def validate_input(dict_request):
+    for _, val in dict_request.items():
+        try:
+            val=float(val)
+        except Exception as e:
+            raise NotFloat
+    return True
+
 def form_response(dict_request):
-    data = dict_request.values()
-    data = [list(map(float, data))]
-    response = predict(data)
-    return response
+    try:
+        if validate_input(dict_request):
+            data = dict_request.values()
+            data = [list(map(float, data))]
+            response = predict(data)
+            return response
+    except NotFloat as e:
+        response =  str(e)
+        return response 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -42,7 +60,6 @@ def index():
             print(e)
             error = {"error": "Something went wrong!! Try again later!"}
             error = {"error": e}
-
             return render_template("404.html", error=error)
     else:
         return render_template("index.html")

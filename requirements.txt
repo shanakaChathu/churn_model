@@ -10,3 +10,4 @@ pandas
 sklearn 
 mlflow
 joblib
+flask 
