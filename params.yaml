@@ -24,3 +24,5 @@ random_forest:
   n_estimators: 30
 
 model_dir: models/model.joblib
+
+model_webapp_dir: webapp/model_webapp_dir/model.joblib
