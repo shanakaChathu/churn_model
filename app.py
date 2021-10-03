@@ -12,8 +12,9 @@ template_dir = os.path.join(webapp_root, "templates")
 
 app = Flask(__name__, static_folder=static_dir,template_folder=template_dir)
 
-class  NotFloat(Exception):
-    def __init__(self, message="Values entered are not float"):
+
+class  NotANumber(Exception):
+    def __init__(self, message="Values entered are not Numerical"):
         self.message = message
         super().__init__(self.message)
 
@@ -34,7 +35,7 @@ def validate_input(dict_request):
         try:
             val=float(val)
         except Exception as e:
-            raise NotFloat
+            raise NotANumber
     return True
 
 def form_response(dict_request):
@@ -44,7 +45,7 @@ def form_response(dict_request):
             data = [list(map(float, data))]
             response = predict(data)
             return response
-    except NotFloat as e:
+    except NotANumber as e:
         response =  str(e)
         return response 
 
