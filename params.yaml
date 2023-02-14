@@ -1,0 +1,33 @@
+external_data_config:
+  external_data_csv: data/external/train.csv
+
+raw_data_config: 
+  raw_data_csv: data/raw/train.csv
+  model_var: ['churn','number_vmail_messages','total_day_calls','total_eve_minutes','total_eve_charge','total_intl_minutes','number_customer_service_calls']
+  train_test_split_ratio: 0.2
+  target: churn 
+  random_state: 111
+  new_train_data_csv: data/raw/train_new.csv
+
+processed_data_config:
+  train_data_csv: data/processed/churn_train.csv
+  test_data_csv:  data/processed/churn_test.csv
+
+mlflow_config:
+  artifacts_dir: artifacts
+  experiment_name: model_iteration1
+  run_name: random_forest
+  registered_model_name: random_forest_model
+  remote_server_uri: http://localhost:1234
+ 
+random_forest: 
+  max_depth: 10
+  n_estimators: 30
+
+model_dir: models/model.joblib
+
+model_webapp_dir: webapp/model_webapp_dir/model.joblib
+
+model_monitor:
+  target_col_name: target
+  monitor_dashboard_html: reports/data_and_target_drift_dashboard.html

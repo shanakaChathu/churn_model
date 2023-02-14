@@ -1,0 +1,61 @@
+schema: '2.0'
+stages:
+  raw_dataset_creation:
+    cmd: python src/data/load_data.py --config=params.yaml
+    deps:
+    - path: data/external/train.csv
+      md5: 8929517566f004183dff480fdd48afe0
+      size: 391872
+    - path: src/data/load_data.py
+      md5: 1de1b5780f0f897223d87024bae9c1fa
+      size: 1435
+    outs:
+    - path: data/raw/train.csv
+      md5: 9b61c38a459d36244dbf8e6940236371
+      size: 120397
+  split_data:
+    cmd: python src/data/split_data.py --config=params.yaml
+    deps:
+    - path: data/raw/train.csv
+      md5: 9b61c38a459d36244dbf8e6940236371
+      size: 120397
+    - path: src/data/split_data.py
+      md5: c143a95ea697d55e3718f4fe9bdc4dfb
+      size: 1383
+    outs:
+    - path: data/processed/churn_test.csv
+      md5: c3a4965f71511e72d4af9ac650f47505
+      size: 24209
+    - path: data/processed/churn_train.csv
+      md5: 8358e3ab11f8301c58d3b0e5aa99a6fd
+      size: 96317
+  log_production_model:
+    cmd: python src/models/production_model_selection.py --config=params.yaml
+    deps:
+    - path: src/models/production_model_selection.py
+      md5: 6d49061883427ce690ff89c59c2851ff
+      size: 1726
+    params:
+      params.yaml:
+        random_forest.max_depth: 7
+        random_forest.n_estimators: 20
+    outs:
+    - path: models/model.joblib
+      md5: 0c41c6b4bf510adf0b7c03b9fbb88122
+      size: 80237
+  model_train:
+    cmd: python src/models/train_model.py --config=params.yaml
+    deps:
+    - path: data/processed/churn_test.csv
+      md5: c3a4965f71511e72d4af9ac650f47505
+      size: 24209
+    - path: data/processed/churn_train.csv
+      md5: 8358e3ab11f8301c58d3b0e5aa99a6fd
+      size: 96317
+    - path: src/models/train_model.py
+      md5: 2923cddf7769edf96bb19055bb1693cc
+      size: 3886
+    params:
+      params.yaml:
+        random_forest.max_depth: 7
+        random_forest.n_estimators: 20
